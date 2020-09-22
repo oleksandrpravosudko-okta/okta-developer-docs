@@ -177,7 +177,7 @@ Enumerates Groups in your organization with pagination. A subset of Groups can b
 | after     | Specifies the pagination cursor for the next page of Groups                                | Query     | String   | FALSE    |         |
 | filter    | [Filter expression](/docs/reference/api-overview/#filtering) for Groups      | Query     | String   | FALSE    |         |
 | limit     | Specifies the number of Group results in a page                                            | Query     | Number   | FALSE    | 10000   |
-| q         | Find groups that matches the `name` property                                               | Query     | String   | FALSE    |         |
+| q         | Finds a group that matches the `name` property                                               | Query     | String   | FALSE    |         |
 | search <ApiLifecycle access="ea" /> | Searches for groups with a supported [filtering](/docs/reference/api-overview/#filtering) expression for most properties                        | Query     | String   | FALSE    |         |
 
 > **Notes:** The `after` cursor should be treated as an opaque value and obtained through the next link relation. See [Pagination](/docs/reference/api-overview/#pagination).<br><br>
@@ -252,7 +252,7 @@ curl -v -X GET \
 
 ##### Response example
 
-> **Note:** <ApiLifecycle access="ea" /> The `source` section and the `source` link in the response example below are only present in groups with type `APP_GROUP`. See [Group attributes](#group-attributes) and [Links object](#links-object).
+> **Note:** <ApiLifecycle access="ea" /> The `source` section and the `source` link in the response example below are only present in groups of type `APP_GROUP`. See [Group attributes](#group-attributes) and [Links object](#links-object).
 
 ```JSON
 HTTP/1.1 200 OK
@@ -756,11 +756,11 @@ This operation:
 * Requires [URL encoding](http://en.wikipedia.org/wiki/Percent-encoding).
 For example, `search=type eq "OKTA_GROUP"` is encoded as `search=type+eq+%22OKTA_GROUP%22`.
 Examples use cURL-style escaping instead of URL encoding to make them easier to read.
-Use an ID lookup for records that you update to ensure your results contain the latest data.
+Use an ID lookup for records that you update to ensure your results contain the latest data. Search results are eventually consistent.
 * Searches many properties:
    - Any group profile property, including imported app group profile properties.
    - The top-level properties `id`, `created`, `lastMembershipUpdated`, `lastUpdated`, and `type`.
-   - The <ApiLifecycle access="ea" /> [source](#group-attributes) of groups with type `APP_GROUP`, accessed as `source.id`.
+   - The <ApiLifecycle access="ea" /> [source](#group-attributes) of groups with type of `APP_GROUP`, accessed as `source.id`.
 
 | Search Term Example                                       | Description                                                               |
 | :-------------------------------------------------------- | :------------------------------------------------------------------------ |
@@ -773,11 +773,11 @@ Use an ID lookup for records that you update to ensure your results contain the 
 
 ##### Search Examples
 
-List groups with type `APP_GROUP` that were created before `01/01/2014` and have a source application id `0oa2v0el0gP90aqjJ0g7`.
+List groups of type `APP_GROUP` that were created before `01/01/2014` and have a source application id `0oa2v0el0gP90aqjJ0g7`.
 
     search=type eq "APP_GROUP" and (created lt "2014-01-01T00:00:00.000Z" and source.id eq "0oa2v0el0gP90aqjJ0g7")
 
-List groups that have a `name` starts with `West Coast` or have the source application with id `0oa2v0el0gP90aqjJ0g7` or have a `samAccountName` of `West Coast Users`.
+List groups that have a `name` that starts with `West Coast` or whose source application has the id `0oa2v0el0gP90aqjJ0g7` or have a `samAccountName` of `West Coast Users`.
 
     search=profile.name sw "West Coast" or source.id eq "0oa2v0el0gP90aqjJ0g7" or profile.samAccountName eq "West Coast Users"
 
@@ -875,10 +875,10 @@ Link: <https://${yourOktaDomain}/api/v1/groups?after=00g1emaKYZTWRYYRRTSK&search
 
 <ApiOperation method="put" url="/api/v1/groups/${groupId}" />
 
-Updates the Profile for a Group with `OKTA_GROUP` type from your organization
+Updates the profile for a group of `OKTA_GROUP` type from your organization
 
-> **Notes:** You can modify only Profiles for Groups with `OKTA_GROUP` type.<br><br>
-Application imports are responsible for updating Group Profiles with `APP_GROUP` type such as Active Directory Groups.
+> **Notes:** You can modify only profiles for groups of `OKTA_GROUP` type.<br><br>
+Application imports are responsible for updating profiles for groups of `APP_GROUP` type such as Active Directory groups.
 
 ##### Request parameters
 
@@ -888,7 +888,7 @@ Application imports are responsible for updating Group Profiles with `APP_GROUP`
 | id        | ID of the Group to update     | URL       | String                            | TRUE     |         |
 | profile   | Updated Profile for the Group | Body      | [Profile object](#profile-object) | TRUE     |         |
 
-> **Note:** All Profile properties must be specified when updating a Groups's Profile. Partial updates aren't supported.
+> **Note:** All Profile properties must be specified when updating a groups's profile. Partial updates aren't supported.
 
 ##### Response parameters
 
@@ -953,9 +953,9 @@ curl -v -X PUT \
 
 <ApiOperation method="delete" url="/api/v1/groups/${groupId}" />
 
-Removes a Group with `OKTA_GROUP` or `APP_GROUP` type from your organization
+Removes a group of `OKTA_GROUP` or `APP_GROUP` type from your organization
 
-> **Note:** You can't remove Groups with type `APP_GROUP` if they are used in a Group push mapping.
+> **Note:** You can't remove groups of type `APP_GROUP` if they are used in a group push mapping.
 
 ##### Request parameters
 
@@ -1099,10 +1099,10 @@ Link: <https://${yourOktaDomain}/api/v1/groups/00g1fanEFIQHMQQJMHZP/users?after=
 
 <ApiOperation method="put" url="/api/v1/groups/${groupId}/users/${userId}" />
 
-Adds a [user](/docs/reference/api/users/#user-object) to a Group with `OKTA_GROUP` type
+Adds a [user](/docs/reference/api/users/#user-object) to a group of `OKTA_GROUP` type
 
-> **Notes:** You can modify only memberships for Groups with `OKTA_GROUP` type.<br><br>
-Application imports are responsible for managing Group memberships for Groups with `APP_GROUP` type such as Active Directory Groups.
+> **Notes:** You can modify only memberships for groups of `OKTA_GROUP` type.<br><br>
+Application imports are responsible for managing group memberships for groups of `APP_GROUP` type such as Active Directory groups.
 
 ##### Request parameters
 
@@ -1136,10 +1136,10 @@ HTTP/1.1 204 No Content
 
 <ApiOperation method="delete" url="/api/v1/groups/${groupId}/users/${userId}" />
 
-Removes a [user](/docs/reference/api/users/#user-object) from a Group with `OKTA_GROUP` type
+Removes a [user](/docs/reference/api/users/#user-object) from a group of `OKTA_GROUP` type
 
-> **Notes:** You can modify only memberships for Groups with `OKTA_GROUP` type.<br><br>
-Application imports are responsible for managing Group memberships for Groups with `APP_GROUP` type such as Active Directory Groups.
+> **Notes:** You can modify only memberships for groups of `OKTA_GROUP` type.<br><br>
+Application imports are responsible for managing group memberships for groups of `APP_GROUP` type such as Active Directory groups.
 
 ##### Request parameters
 
@@ -1872,11 +1872,11 @@ All groups have the following properties:
 
 > **Note:** The `id`, `created`, `lastUpdated`, `lastMembershipUpdated`, `objectClass`, `type`, and `_links` properties are available only after you create a Group.
 
-In addition, groups with type `APP_GROUP` also have the following properties:
+In addition, groups of type `APP_GROUP` also have the following properties:
 
 | Property                              | Description                                                                                     | DataType                   | Nullable | Unique | Readonly | MinLength | MaxLength | Validation |
 | ------------------------------------- | ----------------------------------------------------------------------------------------------- | -------------------------- | -------- | ------ | -------- | --------- | --------- | ---------- |
-| source <ApiLifecycle access="ea" />   | the ID of the source [application](/docs/reference/api/apps/#application-object) of the group.  | Array of String            | FALSE    | FALSE  | TRUE     |           |           |            |
+| source <ApiLifecycle access="ea" />   | the ID of the source [application](/docs/reference/api/apps/#application-object) of the group   | Array of String            | FALSE    | FALSE  | TRUE     |           |           |            |
 
 ### Group type
 
@@ -1983,7 +1983,7 @@ Specifies link relations. See [Web Linking](http://tools.ietf.org/html/rfc5988))
 | apps               | Lists all [applications](/docs/reference/api/apps/#application-object) that are assigned to the Group. See [Application Group Operations](/docs/reference/api/apps/#application-group-operations).          |
 | logo               | Provides links to logo images for the Group if available                     |
 | self               | The primary URL for the Group                                                                                             |
-| source <ApiLifecycle access="ea" /> | The URL for the source [application](/docs/reference/api/apps/#application-object) of the group. This link attribute is only present in groups with `APP_GROUP` type.          |
+| source <ApiLifecycle access="ea" /> | The URL for the source [application](/docs/reference/api/apps/#application-object) of the group. This link attribute is only present in groups of `APP_GROUP` type.          |
 | users              | Provides [Group member operations](#group-member-operations) for the Group                                                      |
 
 > **Note:** The Links object is read-only.
