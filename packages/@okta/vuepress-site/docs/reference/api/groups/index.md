@@ -178,7 +178,7 @@ Enumerates Groups in your organization with pagination. A subset of Groups can b
 | filter    | [Filter expression](/docs/reference/api-overview/#filtering) for Groups      | Query     | String   | FALSE    |         |
 | limit     | Specifies the number of Group results in a page                                            | Query     | Number   | FALSE    | 10000   |
 | q         | Finds a group that matches the `name` property                                               | Query     | String   | FALSE    |         |
-| search <ApiLifecycle access="ea" /> | Searches for groups with a supported [filtering](/docs/reference/api-overview/#filtering) expression for most properties                        | Query     | String   | FALSE    |         |
+| search <ApiLifecycle access="ea" /> | Searches for groups with a supported [filtering](/docs/reference/api-overview/#filtering) expression for all [attributes](#group-attributes) except for `_embedded`, `_links`, and `objectClass`  | Query     | String   | FALSE    |         |
 
 > **Notes:** The `after` cursor should be treated as an opaque value and obtained through the next link relation. See [Pagination](/docs/reference/api-overview/#pagination).<br><br>
 Search currently performs a `startsWith` match but it should be considered an implementation detail and may change without notice in the future.
@@ -773,13 +773,13 @@ Use an ID lookup for records that you update to ensure your results contain the 
 
 ##### Search Examples
 
-List groups of type `APP_GROUP` that were created before `01/01/2014` and have a source application id `0oa2v0el0gP90aqjJ0g7`.
+List groups of type `APP_GROUP` that were created before `01/01/2014` and whose source application has the id `0oa2v0el0gP90aqjJ0g7`.
 
     search=type eq "APP_GROUP" and (created lt "2014-01-01T00:00:00.000Z" and source.id eq "0oa2v0el0gP90aqjJ0g7")
 
-List groups that have a `name` that starts with `West Coast` or whose source application has the id `0oa2v0el0gP90aqjJ0g7` or have a `samAccountName` of `West Coast Users`.
+List groups that have a `name` that starts with `West Coast` or have a `samAccountName` of `West Coast Users` or whose source application has the id `0oa2v0el0gP90aqjJ0g7`.
 
-    search=profile.name sw "West Coast" or source.id eq "0oa2v0el0gP90aqjJ0g7" or profile.samAccountName eq "West Coast Users"
+    search=profile.name sw "West Coast" or profile.samAccountName eq "West Coast Users" or source.id eq "0oa2v0el0gP90aqjJ0g7"
 
 ##### Request Example
 
@@ -1860,15 +1860,15 @@ All groups have the following properties:
 
 | Property              | Description                                                  | DataType                                                       | Nullable | Unique | Readonly | MinLength | MaxLength | Validation |
 | --------------------- | ------------------------------------------------------------ | -------------------------------------------------------------- | -------- | ------ | -------- | --------- | --------- | ---------- |
-| _embedded             | embedded resources related to the Group                      | [JSON HAL](http://tools.ietf.org/html/draft-kelly-json-hal-06) | TRUE     | FALSE  | TRUE     |           |           |            |
-| _links                | [discoverable resources](#links-object) related to the Group | [JSON HAL](http://tools.ietf.org/html/draft-kelly-json-hal-06) | TRUE     | FALSE  | TRUE     |           |           |            |
-| created               | timestamp when Group was created                             | Date                                                           | FALSE    | FALSE  | TRUE     |           |           |            |
-| id                    | unique key for Group                                         | String                                                         | FALSE    | TRUE   | TRUE     |           |           |            |
-| lastMembershipUpdated | timestamp when Group's memberships were last updated         | Date                                                           | FALSE    | FALSE  | TRUE     |           |           |            |
-| lastUpdated           | timestamp when Group's `profile` was last updated            | Date                                                           | FALSE    | FALSE  | TRUE     |           |           |            |
-| objectClass           | determines the Group's `profile`                             | Array of String                                                | TRUE     | FALSE  | TRUE     | 1         |           |            |
-| profile               | the Group's Profile properties                               | [Profile object](#profile-object)                              | FALSE    | FALSE  | FALSE    |           |           |            |
-| type                  | determines how a Group's Profile and memberships are managed | [Group Type](#group-type)                                      | FALSE    | FALSE  | TRUE     |           |           |            |
+| _embedded             | Embedded resources related to the Group                      | [JSON HAL](http://tools.ietf.org/html/draft-kelly-json-hal-06) | TRUE     | FALSE  | TRUE     |           |           |            |
+| _links                | [Discoverable resources](#links-object) related to the Group | [JSON HAL](http://tools.ietf.org/html/draft-kelly-json-hal-06) | TRUE     | FALSE  | TRUE     |           |           |            |
+| created               | Timestamp when Group was created                             | Date                                                           | FALSE    | FALSE  | TRUE     |           |           |            |
+| id                    | Unique key for Group                                         | String                                                         | FALSE    | TRUE   | TRUE     |           |           |            |
+| lastMembershipUpdated | Timestamp when Group's memberships were last updated         | Date                                                           | FALSE    | FALSE  | TRUE     |           |           |            |
+| lastUpdated           | Timestamp when Group's `profile` was last updated            | Date                                                           | FALSE    | FALSE  | TRUE     |           |           |            |
+| objectClass           | Determines the Group's `profile`                             | Array of String                                                | TRUE     | FALSE  | TRUE     | 1         |           |            |
+| profile               | The Group's Profile properties                               | [Profile object](#profile-object)                              | FALSE    | FALSE  | FALSE    |           |           |            |
+| type                  | Determines how a Group's Profile and memberships are managed | [Group Type](#group-type)                                      | FALSE    | FALSE  | TRUE     |           |           |            |
 
 > **Note:** The `id`, `created`, `lastUpdated`, `lastMembershipUpdated`, `objectClass`, `type`, and `_links` properties are available only after you create a Group.
 
@@ -1876,7 +1876,7 @@ In addition, groups of type `APP_GROUP` also have the following properties:
 
 | Property                              | Description                                                                                     | DataType                   | Nullable | Unique | Readonly | MinLength | MaxLength | Validation |
 | ------------------------------------- | ----------------------------------------------------------------------------------------------- | -------------------------- | -------- | ------ | -------- | --------- | --------- | ---------- |
-| source <ApiLifecycle access="ea" />   | the ID of the source [application](/docs/reference/api/apps/#application-object) of the group   | Array of String            | FALSE    | FALSE  | TRUE     |           |           |            |
+| source <ApiLifecycle access="ea" />   | The ID of the source [application](/docs/reference/api/apps/#application-object) of the group   | Array of String            | FALSE    | FALSE  | TRUE     |           |           |            |
 
 ### Group type
 
@@ -1900,8 +1900,8 @@ Profile for any Group that is not imported from Active Directory
 
 | Property    | Description              | DataType | Nullable | Readonly | MinLength | MaxLength | Validation |
 | ----------- | ------------------------ | -------- | -------- | -------- | --------- | --------- | ---------- |
-| name        | name of the Group        | String   | FALSE    | FALSE    | 1         | 255       |            |
-| description | description of the Group | String   | TRUE     | FALSE    | 0         | 1024      |            |
+| name        | Name of the Group        | String   | FALSE    | FALSE    | 1         | 255       |            |
+| description | Description of the Group | String   | TRUE     | FALSE    | 0         | 1024      |            |
 
 ```json
 {
@@ -1954,12 +1954,12 @@ Profile for a Group that is imported from Active Directory
 
 | Property                   | Description                                            | DataType | Nullable  | Readonly | MinLength | MaxLength | Validation |
 | -------------------------- | ------------------------------------------------------ | -------- | --------- | -------- | --------- | --------- | ---------- |
-| description                | description of the Windows Group                       | String   | FALSE     | TRUE     |           |           |            |
-| dn                         | the distinguished name of the Windows Group            | String   | FALSE     | TRUE     |           |           |            |
-| externalId                 | base-64 encoded GUID (objectGUID) of the Windows Group | String   | FALSE     | TRUE     |           |           |            |
-| name                       | name of the Windows Group                              | String   | FALSE     | TRUE     |           |           |            |
-| samAccountName             | pre-Windows 2000 name of the Windows Group             | String   | FALSE     | TRUE     |           |           |            |
-| windowsDomainQualifiedName | fully qualified name of the Windows Group              | String   | FALSE     | TRUE     |           |           |            |
+| description                | Description of the Windows Group                       | String   | FALSE     | TRUE     |           |           |            |
+| dn                         | The distinguished name of the Windows Group            | String   | FALSE     | TRUE     |           |           |            |
+| externalId                 | Base-64 encoded GUID (objectGUID) of the Windows Group | String   | FALSE     | TRUE     |           |           |            |
+| name                       | Name of the Windows Group                              | String   | FALSE     | TRUE     |           |           |            |
+| samAccountName             | Pre-Windows 2000 name of the Windows Group             | String   | FALSE     | TRUE     |           |           |            |
+| windowsDomainQualifiedName | Fully qualified name of the Windows Group              | String   | FALSE     | TRUE     |           |           |            |
 
 ```json
 {
